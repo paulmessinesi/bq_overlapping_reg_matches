@@ -1,0 +1,28 @@
+CREATE OR REPLACE FUNCTION `project.dataset.keyword_remover_js`(label STRING) RETURNS STRING LANGUAGE js AS """
+
+var keywords = ["ana", "a brown fox", "fox jumps"]
+
+var label = label
+var mask = new Array(label.length).fill(1)
+var reg = new RegExp(keywords.join("|"), 'g')
+
+var found
+
+while (found = reg.exec(label)) { 
+
+    for (var i = found.index + 1; i < reg.lastIndex - 1; i++) {
+        mask[i] = 0
+        }
+    reg.lastIndex = found.index+1
+}
+
+var result = []
+
+for (var i = 0; i < label.length; i++) {
+    if (mask[i]) {
+        result.push(label[i])
+    }
+}
+    
+return result.join('').replace(/ +/g,' ').replace(/^ +| +$/,'')
+""";
